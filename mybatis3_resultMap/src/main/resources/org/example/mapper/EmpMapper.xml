@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.mapper.EmpMapper">
+
+    <!--
+    字段名和属性名不一致的情况下，如何处理映射关系
+    但是字段名符合数据库的规则（使用'_'），实体类中的属性名符合Java的规则（使用驼峰）
+    1、为查询的字段名设置别名，和属性名保持一致
+    -->
+    <select id="getEmpById1" resultType="org.example.pojo.Emp">
+        select emp_id empId,emp_name empName,age,gender from t_emp where emp_id=#{empId}
+    </select>
+    <!--
+    2、可以在MyBatis的核心配置文件中设置一个全局配置信息mapUnderscoreToCamelCase，
+    可以在查询表中数据时，自动将_类型的字段名转换为驼峰
+    例如：字段名user_name，设置了mapUnderscoreToCamelCase，此时字段名就会转换为userName
+    -->
+    <select id="getEmpById2" resultType="org.example.pojo.Emp">
+        select * from t_emp where emp_id=#{empId}
+    </select>
+    <!--
+    3、使用resultMap自定义映射
+    resultMap：设置自定义映射
+    属性：
+    id：表示自定义映射的唯一标识
+    type：查询的数据要映射的实体类的类型
+    子标签：
+    id：设置主键的映射关系
+    result：设置普通字段的映射关系
+    association：设置多对一的映射关系(处理实体)
+    collection：设置一对多的映射关系(处理集合)
+    属性：
+    property：设置映射关系中实体类中的属性名
+    column：设置映射关系中表中的字段名
+    -->
+    <resultMap id="empResultMap" type="Emp">
+        <!--id为主键字段-->
+        <id column="emp_id" property="empId"/>
+        <!--result为普通字段-->
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+    </resultMap>
+    <select id="getEmpById3" resultMap="empResultMap">
+        select * from t_emp where emp_id=#{empId}
+    </select>
+    <!--
+    处理多对一的映射关系
+    1、级联方式处理
+    -->
+    <resultMap id="empAndDeptResultMap1" type="Emp">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <!--开始映射dept的字段，有两个字段，所以肯定不能与dept直接映射-->
+        <result column="dept_id" property="dept.deptId"/>
+        <result column="dept_name" property="dept.deptName"/>
+    </resultMap>
+    <select id="getEmpAndDeptById1" resultMap="empAndDeptResultMap1">
+        <!--这里.*是消除了重复键。如t_emp有一个dept_id，而t_dept也有一个dept_id，左连接肯定就会重复-->
+        select t_emp.*,t_dept.* from t_emp left join t_dept on t_emp.dept_id=t_dept.dept_id where t_emp.emp_id=#{empId}
+    </select>
+    <!--
+    2、associate多对一（一对一）映射关系——处理实体类类型的属性
+    javaType:设置要处理的属性的类型
+    -->
+    <resultMap id="empAndDeptResultMap2" type="Emp">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <!--这里的javaType为返回的对象类型-->
+        <association property="dept" javaType="Dept">
+            <id column="dept_id" property="deptId"/>
+            <result column="dept_name" property="deptName"/>
+        </association>
+    </resultMap>
+    <select id="getEmpAndDeptById2" resultMap="empAndDeptResultMap2">
+         select t_emp.*,t_dept.*
+         from t_emp left join t_dept
+         on t_emp.dept_id=t_dept.dept_id
+         where t_emp.emp_id=#{empId}
+    </select>
+    <!--
+    3、分步查询（多对一/一对多）第一步
+    分布查询的好处：可以实现延迟加载（懒加载）
+    -->
+    <resultMap id="empAndDeptResultMap3_1" type="Emp">
+        <id column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <!--
+        因为设置在全局配置上，所以全部类都会延迟加载
+        那么如果想某个方法立即加载呢
+        collection中的fetchType属性设置当前的分步查询是否使用延迟加载，
+        fetchType="lazy(延迟加载)|eager(立即加载)"
+        -->
+        <association property="dept"
+                     fetchType="eager"
+                     select="org.example.mapper.DeptMapper.getEmpAndDeptById3_2"
+        column="dept_id"/>
+    </resultMap>
+    <select id="getEmpAndDeptById3_1" resultMap="empAndDeptResultMap3_1">
+        select * from t_emp where emp_id=#{empId}
+    </select>
+    <select id="getDeptAndEmpByDeptId2_2" resultType="Emp">
+        select * from t_emp where dept_id=#{deptId};
+    </select>
+</mapper>

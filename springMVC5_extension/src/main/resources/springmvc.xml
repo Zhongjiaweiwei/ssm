@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描控制层组件-->
+    <context:component-scan base-package="zjw"/>
+    <!-- 配置Thymeleaf视图解析器 -->
+    <bean id="viewResolver"
+          class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <!--优先级-->
+        <property name="order" value="1"/>
+        <!--编码-->
+        <property name="characterEncoding" value="UTF-8"/>
+        <!--模板引擎-->
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+                <!-- 模板解析器-->
+                <property name="templateResolver">
+                    <bean
+                            class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+                        <!-- 视图前缀 -->
+                        <property name="prefix" value="/WEB-INF/templates/"/>
+                        <!-- 视图后缀 -->
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML5"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    <!--
+    处理静态资源，例如html、js、css、jpg
+    若只设置该标签，则只能访问静态资源，其他请求则无法访问
+    </beans>此时必须设置<mvc:annotation-driven/>解决问题
+-->
+    <mvc:default-servlet-handler/>
+    <!-- 开启mvc注解驱动 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <!-- 处理响应中文内容乱码 -->
+            <bean
+                    class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="defaultCharset" value="UTF-8"/>
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html</value>
+                        <value>application/json</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <mvc:view-controller path="/" view-name="index"/>
+    <!--配置拦截器-->
+    <!--<bean class="zjw.interceptor.FirstInterceptor" id="firstInterceptor"/>-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--设置对哪个类进行拦截-->
+            <!--/*为一层目录，/**为所有目录-->
+            <mvc:mapping path="/**"/>
+            <!--设置对哪个类排除拦截-->
+            <mvc:exclude-mapping path="/abc"/>
+            <!--<bean class="zjw.interceptor.FirstInterceptor"/>-->
+            <ref bean="firstInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--配置异常处理器(xml方式,此处注释掉，因为要采用注解方式-->
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                &lt;!&ndash;数学运算异常(后接逻辑视图，表示页面跳转)&ndash;&gt;
+                <prop key="java.lang.ArithmeticException">error</prop>
+            </props>
+        </property>
+        &lt;!&ndash;将异常信息共享在请求域中&ndash;&gt;
+        <property name="exceptionAttribute" value="ex"/>
+    </bean>-->
+</beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- 使用init-method属性指定初始化方法 -->
+    <!-- 使用destroy-method属性指定销毁方法(当服务器关闭的时候才会执行销毁) -->
+    <!-- scope属性：取值singleton（默认值），bean在IOC容器中只有一个实例，IOC容器初始化时创建对象 -->
+    <!-- scope属性：取值prototype，bean在IOC容器中可以有多个实例，getBean()时创建对象 -->
+    <bean class="org.example.com.zjw.pojo.User" scope="prototype" init-method="initMethod"
+          destroy-method="destroyMethod">
+        <property name="id" value="1001"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="123456"/>
+        <property name="age" value="23"/>
+    </bean>
+    <!--bean后置处理器不是单独针对某一个bean生效，而是针对IOC容器中所有bean都会执行-->
+    <bean class="org.example.process.MyBeanPostProcess" id="myBeanPostProcess"/>
+</beans>

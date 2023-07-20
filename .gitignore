@@ -1,0 +1,21 @@
+# Project exclude paths
+/mybatis1_helloworld/target/
+/mybatis2_parameter/target/
+/mybatis3_resultMap/target/
+/mybatis4_dynamicSql/target/
+/mybatis5_cache/target/
+/mybatis6_mybatisGenerator/target/
+/spring1_helloworld/target/
+/spring2_Ioc_xml/target/
+/spring3_ioc_annotation/target/
+/spring4_proxy/target/
+/spring5-aop/target/
+/spring6_transaction/target/
+/springMVC1_helloworld/target/
+/springMVC2_demo/target/
+/springMVC3_rest/target/
+/springMVC4_ajax/target/
+/springMVC5_extension/target/
+/springMVC6_annotation/target/
+/ssm1_listener/target/
+/ssm2_helloworld/target/

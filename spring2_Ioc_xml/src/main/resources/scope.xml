@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--默认为单例-->
+    <bean id="student1" class="org.example.com.zjw.pojo.Student" scope="singleton">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+    </bean>
+    <!--设置为多例-->
+    <bean id="student2" class="org.example.com.zjw.pojo.Student" scope="prototype">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+    </bean>
+    <!--
+    还有两个作用域，但不常用
+    request 在一个请求范围内有效
+    session 在一个会话范围内有效
+    -->
+</beans>

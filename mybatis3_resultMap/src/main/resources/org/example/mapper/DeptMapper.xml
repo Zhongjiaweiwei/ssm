@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.mapper.DeptMapper">
+    <!--
+    3、分步查询（多对一/一对多）第二步
+    -->
+    <select id="getEmpAndDeptById3_2" resultType="org.example.pojo.Dept">
+        select * from t_dept where dept_id=#{deptId}
+    </select>
+    <!--
+    处理一对多的映射关系
+    1、collection
+    -->
+    <resultMap id="deptAndEmpResultMap1" type="Dept">
+        <id column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+        <!--ofType设置返回的集合内存储的对象的类型-->
+        <collection property="emps" ofType="Emp">
+            <id column="emp_id" property="empId"/>
+            <result column="emp_name" property="empName"/>
+            <result column="age" property="age"/>
+            <result column="gender" property="gender"/>
+        </collection>
+    </resultMap>
+    <select id="getDeptAndEmpByDeptId1" resultMap="deptAndEmpResultMap1">
+         select t_dept.*,t_emp.*
+         from t_dept join t_emp
+         on t_dept.dept_id=t_emp.dept_id
+         where t_dept.dept_id=#{deptId}
+    </select>
+    <resultMap id="deptAndEmpResultMap2" type="Dept">
+        <id column="dept_id" property="deptId"/>
+        <result column="dept_name" property="deptName"/>
+        <collection property="emps"
+                    fetchType="lazy"
+                    select="org.example.mapper.EmpMapper.getDeptAndEmpByDeptId2_2"
+                    column="dept_id"/>
+    </resultMap>
+    <select id="getDeptAndEmpByDeptId2_1" resultMap="deptAndEmpResultMap2">
+        select * from t_dept where dept_id=#{deptId}
+    </select>
+</mapper>

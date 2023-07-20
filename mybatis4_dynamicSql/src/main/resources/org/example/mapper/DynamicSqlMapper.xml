@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.mapper.DynamicSqlMapper">
+    <!--
+    if标签可通过test属性的表达式进行判断，若表达式的结果为true，则标签中的内容会执行；
+    反之标签中的内容不会执行
+    -->
+    <!--但是这个标签有弊端，也就是如果第一个条件为false,则where后面直接接and
+    或者后面的条件都为null，则语句以where结尾语法错误
+    解决方法就是在where后面添加恒等式子如1=1，但是这么做的话，如果后面都为null，那么便会查询出所有对象
+    还有一种解决方法就是用where标签
+    -->
+    <select id="getEmpByCondition1" resultType="org.example.com.zjw.pojo.Emp">
+        select * from t_emp where
+        <if test="empName !=null and empName!=''">
+            emp_Name=#{empName}
+        </if>
+        <if test="age!=null and age!=''">
+            and age=#{age}
+        </if>
+        <if test="gender!=null and gender!=''">
+            and gender=#{gender}
+        </if>
+    </select>
+    <!--
+    where的好处就是可以自动把where后面的and去掉，注意是相邻的and
+    where和if一般结合使用：
+    C>若where标签中的if条件都不满足，则where标签没有任何功能，即不会添加where关键字
+    b>若where标签中的if条件满足，则where标签会自动添加where关键字，并将条件最前方多余的
+    and去掉
+    注意：where标签不能去掉条件最后多余的and
+    -->
+    <select id="getEmpByCondition2" resultType="org.example.com.zjw.pojo.Emp">
+        select * from t_emp
+        <where>
+            <if test="empName !=null and empName!=''">
+                and emp_Name=#{empName}
+            </if>
+            <if test="age!=null and age!=''">
+                and age=#{age}
+            </if>
+            <if test="gender!=null and gender!=''">
+                and gender=#{gender}
+            </if>
+        </where>
+    </select>
+    <!--trim用于去掉或添加标签中的内容
+    常用属性：
+    prefix：在trim标签中的内容的前面添加某些内容
+    prefixOverrides：在trim标签中的内容的前面去掉某些内容
+    suffix：在trim标签中的内容的后面添加某些内容
+    suffixOverrides：在trim标签中的内容的后面去掉某些内容-->
+    <select id="getEmpByCondition3" resultType="org.example.com.zjw.pojo.Emp">
+        <trim prefix="where" suffixOverrides="and">
+            <if test="empName !=null and empName!=''">
+                and emp_Name=#{empName}
+            </if>
+            <if test="age!=null and age!=''">
+                and age=#{age}
+            </if>
+            <if test="gender!=null and gender!=''">
+                and gender=#{gender}
+            </if>
+        </trim>
+    </select>
+    <!--choose、when、 otherwise相当于if...else if..else
+    when可以有多个，otherwise至多有一个-->
+    <select id="getEmpByChoose" resultType="org.example.com.zjw.pojo.Emp">
+        select * from t_emp
+        <where>
+            <choose>
+                <when test="empName !=null and empName!=''">
+                    emp_Name=#{empName}
+                </when>
+                <when test="age!=null and age!=''">
+                    age=#{age}
+                </when>
+                <when test="gender!=null and gender!=''">
+                    gender=#{gender}
+                </when>
+            </choose>
+        </where>
+    </select>
+    <!--foreach为循环语句，item为类型，separator为分隔符-->
+    <insert id="insertMoreEmp">
+        insert into t_emp values
+        <foreach collection="emps" item="emp" separator=",">
+            (null ,#{emp.empName},#{emp.age},#{emp.gender},null)
+        </foreach>
+    </insert>
+    <!--第一种写法,item表示用一个字符串表示数组或集合中的每一个元素-->
+    <delete id="deleteMoreEmp1">
+        delete from t_emp where emp_id in
+        (
+        <foreach collection="empIds" item="empId" separator=",">
+            #{empId}
+        </foreach>
+        )
+    </delete>
+    <!--第二种写法-->
+    <delete id="deleteMoreEmp2">
+        delete from t_emp where emp_id in
+        <foreach collection="empIds" item="empId" separator="," open="(" close=")">
+            #{empId}
+        </foreach>
+    </delete>
+    <!--第三种写法-->
+    <delete id="deleteMoreEmp3">
+        delete from t_emp where
+        <foreach collection="empIds" item="empId" separator="or">
+            emp_id=#{empId}
+        </foreach>
+    </delete>
+    <!--sql片段，可以记录一段公共sql片段，在使用的地方通过include标签进行引入-->
+    <sql id="empColumns">
+        emp_id,emp_name,age,gender,dept_id
+    </sql>
+    <!--引入实例-->
+    <select id="age" resultType="emp">
+        select
+        <include refid="empColumns"></include>
+        from t_emp
+    </select>
+</mapper>

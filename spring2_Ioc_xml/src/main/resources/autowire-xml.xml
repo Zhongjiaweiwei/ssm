@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--
+    byType:根据类型实现属性的自动装配
+    如果一定要用byName，那么属性名和IOC容器中bean的id保持一致
+    -->
+    <bean id="com.zjw.controller" class="org.example.com.zjw.controller.UserController" autowire="byType">
+        <!--<property name="userService" ref="service"/>-->
+    </bean>
+    <bean id="service" class="org.example.service.Impl.UserServiceImpl" autowire="byType">
+        <!--<property name="userDao" ref="com.zjw.controller.dao"/>-->
+    </bean>
+    <bean id="com.zjw.controller.dao" class="org.example.com.zjw.controller.dao.Impl.UserDaoImpl"/>
+</beans>

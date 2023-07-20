@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <!--扫描组件除了控制层-->
+    <context:component-scan base-package="com.zjw">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--引入jdbc.properties-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--开启事务注解驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--配置sqlSessionFactoryBean-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--设置mybatis核心配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--以下可以配置mybatis核心配置文件的内容，用来代替mybatis.xml-->
+        <!--配置多个连接数据库的环境-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--设置类型别名-->
+        <property name="typeAliasesPackage" value="com.zjw.pojo"/>
+        <!--引入映射文件-->
+        <!--如果映射文件所在的包和接口的位置一致，且文件名也一致，则该条配置可以不写-->
+        <!--<property name="mapperLocations" value="classpath:com/zjw/mapper/*.xml"/>-->
+        <!--配置分页插件-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor"/>
+            </array>
+        </property>
+    </bean>
+    <!--把指定的mapper接口，通过sqlSession创建代理实现类对象交给IOC容器管理-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.zjw.mapper"/>
+    </bean>
+</beans>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring6_transaction" />
+        <module name="springmvc1_helloworld" />
+        <module name="spring2_Ioc_xml" />
+        <module name="mybatis3_resultMap" />
+        <module name="mybatis5_cache" />
+        <module name="springMVC1_helloworld" />
+        <module name="springMVC2_demo" />
+        <module name="spring1_helloworld" />
+        <module name="mybatis1_helloworld" />
+        <module name="springMVC5_extension" />
+        <module name="mybatis6_mybatisGenerator" />
+        <module name="ssm1_listener" />
+        <module name="mybatis4_dynamicSql" />
+        <module name="ssm2_helloworld" />
+        <module name="spring3_ioc_annotation" />
+        <module name="springMVC4_ajax" />
+        <module name="spring5-aop" />
+        <module name="spring4_proxy" />
+        <module name="springMVC6_annotation" />
+        <module name="springMVC3_rest" />
+        <module name="Mybatis" />
+        <module name="mybatis2_parameter" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

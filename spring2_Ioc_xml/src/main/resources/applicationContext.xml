@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="studentOne" class="org.example.com.zjw.pojo.Student"/>
+
+    <bean id="studentTwo" class="org.example.com.zjw.pojo.Student">
+        <!-- property标签：通过组件类的setXxx()方法给组件对象设置属性 -->
+        <!-- name属性：指定属性名（这个属性名是getXxx()、setXxx()方法定义的，和成员变量无关）-->
+        <!-- value属性：指定属性值 -->
+        <property name="sid" value="1"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+    </bean>
+
+    <bean id="studentThree" class="org.example.com.zjw.pojo.Student">
+        <constructor-arg value="1"/>
+        <constructor-arg value="张三"/>
+        <constructor-arg value="20"/>
+        <!--name可以指定要赋值的类型-->
+        <constructor-arg value="男" name="gender"/>
+    </bean>
+
+    <bean id="studentFour" class="org.example.com.zjw.pojo.Student">
+        <property name="sid" value="1"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <!--如果要设置为null-->
+        <property name="gender">
+            <null/>
+        </property>
+    </bean>
+    <bean id="studentFive" class="org.example.com.zjw.pojo.Student">
+        <property name="sid" value="1"/>
+        <!--如果要设置特殊字符-->
+        <property name="sname" value="&lt;张三&gt;"/>
+        <property name="age" value="20"/>
+        <!--还有一种方法就是CDATA区-->
+        <property name="gender">
+            <value><![CDATA[<男>]]></value>
+        </property>
+    </bean>
+    <bean id="clazz" class="org.example.com.zjw.pojo.Clazz">
+        <property name="cid" value="10001"/>
+        <property name="cname" value="学渣班"/>
+        <property name="students">
+            <list>
+                <ref bean="studentEight"/>
+            </list>
+        </property>
+    </bean>
+    <!--也可以用定义好的集合-->
+    <bean id="clazzOne" class="org.example.com.zjw.pojo.Clazz">
+        <property name="cid" value="10001"/>
+        <property name="cname" value="学渣班"/>
+        <property name="students" ref="studentList"/>
+    </bean>
+    <bean id="studentSix" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <!-- ref属性：引用IOC容器中某个bean的id，将所对应的bean为属性赋值 -->
+        <property name="clazz" ref="clazz"/>
+    </bean>
+    <bean id="studentSeven" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <!--
+        级联方式
+        相当于修改
+         -->
+        <property name="clazz" ref="clazz"/>
+        <property name="clazz.cname" value="学霸班"/>
+        <property name="clazz.cid" value="10002"/>
+    </bean>
+    <bean id="studentEight" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <!--
+        内部类方式
+        只能在当前的bean使用，不能通过IOC容器获取
+        -->
+        <property name="clazz">
+            <bean id="calzzInner" class="org.example.com.zjw.pojo.Clazz">
+                <property name="cid" value="10003"/>
+                <property name="cname" value="前程班"/>
+            </bean>
+        </property>
+    </bean>
+    <bean id="studentNine" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <property name="hobby">
+            <array>
+                <value>唱</value>
+                <value>跳</value>
+                <value>rap</value>
+                <value>篮球</value>
+            </array>
+        </property>
+    </bean>
+    <!--配置一个集合类型的bean，需要使用util的约束-->
+    <util:list id="studentList">
+        <ref bean="studentSix"/>
+        <ref bean="studentSeven"/>
+        <ref bean="studentEight"/>
+    </util:list>
+
+    <bean id="teacherOne" class="org.example.com.zjw.pojo.Teacher">
+        <property name="tid" value="0001"/>
+        <property name="tname" value="斯文"/>
+    </bean>
+    <bean id="teacherTwo" class="org.example.com.zjw.pojo.Teacher">
+        <property name="tid" value="0002"/>
+        <property name="tname" value="败类"/>
+    </bean>
+    <bean id="studentTen" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <property name="hobby">
+            <array>
+                <value>唱</value>
+                <value>跳</value>
+                <value>rap</value>
+                <value>篮球</value>
+            </array>
+        </property>
+        <property name="teacherMap">
+            <map>
+                <entry key="0001" value-ref="teacherOne"/>
+                <entry key="0002" value-ref="teacherTwo"/>
+            </map>
+        </property>
+    </bean>
+    <util:map id="teacherMap">
+        <entry key="0001" value-ref="teacherOne"/>
+        <entry key="0002" value-ref="teacherTwo"/>
+    </util:map>
+    <bean id="studentEleven" class="org.example.com.zjw.pojo.Student1">
+        <property name="sid" value="1001"/>
+        <property name="sname" value="张三"/>
+        <property name="age" value="20"/>
+        <property name="gender" value="男"/>
+        <property name="hobby">
+            <array>
+                <value>唱</value>
+                <value>跳</value>
+                <value>rap</value>
+                <value>篮球</value>
+            </array>
+        </property>
+        <property name="teacherMap" ref="teacherMap"/>
+    </bean>
+    <bean id="studentTwelve" class="org.example.com.zjw.pojo.Student1"
+          p:sid="1001" p:sname="张三" p:teacherMap-ref="teacherMap"/>
+</beans>

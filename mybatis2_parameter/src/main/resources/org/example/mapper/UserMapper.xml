@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.mapper.UserMapper">
+
+    <!--这里的大括号{}里面的username名字可以自定义，只是充当占位符？-->
+    <select id="selectUserByName1" resultType="User">
+        select * from t_user where username=#{username}
+    </select>
+
+    <!--${}仅仅是拼接，需要自己添加单引号-->
+    <select id="selectUserByName2" resultType="User">
+        select * from t_user where username='${username}'
+    </select>
+
+    <!--以arg0,arg1...为键，以参数为值；
+    以param1,param2...为键，以参数为值；-->
+    <select id="checkLogin" resultType="User">
+        select * from t_user where username=#{arg0} and password=#{arg1}
+    </select>
+
+    <select id="checkLoginByMap" resultType="User">
+        select * from t_user where username=#{username} and password=#{password}
+    </select>
+
+    <insert id="insertUser" >
+        insert into t_user values(null,#{username},#{password},#{age},#{gender},#{email})
+    </insert>
+
+    <select id="checkLoginByParam" resultType="User">
+        select * from t_user where username=#{username} and password=#{password}
+    </select>
+
+</mapper>
